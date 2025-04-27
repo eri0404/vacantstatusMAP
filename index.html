@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Dormitory Map (Satellite View)</title>
+  <title>Dormitory Map with Routes</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
@@ -24,14 +24,22 @@
 
 <script>
 // Initialize the map
-const map = L.map('map').setView([15.2206, 120.6873], 15); 
-// San Agustin, Magalang, Pampanga coordinates
-// Zoom 16 para lapit na lapit at kita agad lahat ng pins
+const map = L.map('map').setView([15.2206, 120.6873], 15); // San Agustin, Magalang, Pampanga
 
-// Add Esri Satellite basemap
-const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-  attribution: 'Tiles &copy; Esri'
-}).addTo(map);
+// Google Maps API key (replace with your own key)
+const googleMapsApiKey = 'YOUR_GOOGLE_MAPS_API_KEY';
+
+// Add Google Satellite basemap
+const googleSatellite = L.tileLayer(
+  `https://maps.googleapis.com/maps/api/staticmap?center={lat},{lng}&zoom={z}&size=600x600&maptype=satellite&key=${googleMapsApiKey}`,
+  {
+    attribution: '&copy; <a href="https://www.google.com/intl/en-US_US/help/terms_maps.html">Google</a>',
+    maxZoom: 19,
+  }
+).addTo(map);
+
+// PSAU Gate 1 coordinates
+const psauGate1 = [15.2156, 120.6886]; // Replace with actual coordinates if needed
 
 // Your published CSV URL
 const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQRwwQ1M6kEM44Jgb1t5gjBEhlUPa8D_SdgOT9aN4RSfzJM7v_vvk2dQVRw0Qwe0-wZaqQDrTmupDQg/pub?output=csv';
@@ -73,6 +81,11 @@ function addMarkers(dorms) {
 
     const marker = L.marker([lat, lng]).addTo(map);
     marker.bindPopup(generatePopup(dorm));
+
+    // When marker is clicked, get directions to PSAU Gate 1
+    marker.on('click', function() {
+      getDirections([lat, lng], psauGate1);
+    });
   });
 }
 
@@ -80,20 +93,44 @@ function addMarkers(dorms) {
 function generatePopup(dorm) {
   let popup = `<b>${dorm['Piliin ang iyong Dormitory']}</b><br>`;
   if (dorm['Contact Number']) popup += `<b>Contact:</b> ${dorm['Contact Number']}<br>`;
-  if (dorm['Available Bed Space - for GIRLS/BOYS']) popup += `Available Bed Space (Girls/Boys): ${dorm['Available Bed Space - for GIRLS/BOYS']}<br>`;
-  if (dorm['Available Bed Space - for GIRLS']) popup += `Available Bed Space (Girls): ${dorm['Available Bed Space - for GIRLS']}<br>`;
-  if (dorm['Available Bed Space - for BOYS']) popup += `Available Bed Space (Boys): ${dorm['Available Bed Space - for BOYS']}<br>`;
-  if (dorm['Available Solo Room - for GIRLS/BOYS']) popup += `Available Solo Room (Girls/Boys): ${dorm['Available Solo Room - for GIRLS/BOYS']}<br>`;
-  if (dorm['Available Solo Room - for GIRLS']) popup += `Available Solo Room (Girls): ${dorm['Available Solo Room - for GIRLS']}<br>`;
-  if (dorm['Available Solo Room - for BOYS']) popup += ` AvailableSolo Room (Boys): ${dorm['Available Solo Room - for BOYS']}<br>`;
-  if (dorm['Available Shared Room - for GIRLS/BOYS']) popup += `Available Shared Room (Girls/Boys): ${dorm['Available Shared Room - for GIRLS/BOYS']}<br>`;
-  if (dorm['Available Shared Room - for GIRLS']) popup += `Available Shared Room (Girls): ${dorm['Available Shared Room - for GIRLS']}<br>`;
-  if (dorm['Available Shared Room - for BOYS']) popup += `Available Shared Room (Boys): ${dorm['Available Shared Room - for BOYS']}<br>`;
+  if (dorm['Available Bed Space - for GIRLS/BOYS']) popup += `Bed Space (Girls/Boys): ${dorm['Available Bed Space - for GIRLS/BOYS']}<br>`;
+  if (dorm['Available Bed Space - for GIRLS']) popup += `Bed Space (Girls): ${dorm['Available Bed Space - for GIRLS']}<br>`;
+  if (dorm['Available Bed Space - for BOYS']) popup += `Bed Space (Boys): ${dorm['Available Bed Space - for BOYS']}<br>`;
+  if (dorm['Available Solo Room - for GIRLS/BOYS']) popup += `Solo Room (Girls/Boys): ${dorm['Available Solo Room - for GIRLS/BOYS']}<br>`;
+  if (dorm['Available Solo Room - for GIRLS']) popup += `Solo Room (Girls): ${dorm['Available Solo Room - for GIRLS']}<br>`;
+  if (dorm['Available Solo Room - for BOYS']) popup += `Solo Room (Boys): ${dorm['Available Solo Room - for BOYS']}<br>`;
+  if (dorm['Available Shared Room - for GIRLS/BOYS']) popup += `Shared Room (Girls/Boys): ${dorm['Available Shared Room - for GIRLS/BOYS']}<br>`;
+  if (dorm['Available Shared Room - for GIRLS']) popup += `Shared Room (Girls): ${dorm['Available Shared Room - for GIRLS']}<br>`;
+  if (dorm['Available Shared Room - for BOYS']) popup += `Shared Room (Boys): ${dorm['Available Shared Room - for BOYS']}<br>`;
   
   return popup;
+}
+
+// Get directions using Google Maps Directions API
+function getDirections(from, to) {
+  const directionsService = new google.maps.DirectionsService();
+  const directionsRenderer = new google.maps.DirectionsRenderer();
+  
+  const start = new google.maps.LatLng(from[0], from[1]);
+  const end = new google.maps.LatLng(to[0], to[1]);
+  
+  const request = {
+    origin: start,
+    destination: end,
+    travelMode: google.maps.TravelMode.DRIVING,
+  };
+  
+  directionsService.route(request, function(response, status) {
+    if (status === google.maps.DirectionsStatus.OK) {
+      // Draw the route on the map
+      directionsRenderer.setDirections(response);
+      directionsRenderer.setMap(map);
+    } else {
+      console.error('Directions request failed due to ' + status);
+    }
+  });
 }
 </script>
 
 </body>
 </html>
-

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dormitory Map (Satellite View)</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  
+  <style>
+    #map {
+      height: 100vh;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+// Initialize the map
+const map = L.map('map').setView([15.2206, 120.6873], 15); 
+// San Agustin, Magalang, Pampanga coordinates
+// Zoom 16 para lapit na lapit at kita agad lahat ng pins
+
+// Add Esri Satellite basemap
+const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+  attribution: 'Tiles &copy; Esri'
+}).addTo(map);
+
+// Your published CSV URL
+const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQRwwQ1M6kEM44Jgb1t5gjBEhlUPa8D_SdgOT9aN4RSfzJM7v_vvk2dQVRw0Qwe0-wZaqQDrTmupDQg/pub?output=csv';
+
+// Fetch and parse CSV
+fetch(csvUrl)
+  .then(response => response.text())
+  .then(csvData => {
+    const data = parseCSV(csvData);
+    addMarkers(data);
+  })
+  .catch(error => console.error('Error loading CSV:', error));
+
+// Function to parse CSV
+function parseCSV(csv) {
+  const rows = csv.split('\n').filter(r => r.trim().length > 0);
+  const headers = rows[0].split(',');
+  const data = [];
+
+  rows.slice(1).forEach(row => {
+    const values = row.split(',');
+    const item = {};
+    headers.forEach((header, i) => {
+      item[header.trim()] = values[i]?.trim();
+    });
+    data.push(item);
+  });
+
+  return data;
+}
+
+// Add markers for each dormitory
+function addMarkers(dorms) {
+  dorms.forEach(dorm => {
+    if (!dorm['Latitude'] || !dorm['Longitude'] || !dorm['Piliin ang iyong Dormitory']) return;
+
+    const lat = parseFloat(dorm['Latitude']);
+    const lng = parseFloat(dorm['Longitude']);
+
+    const marker = L.marker([lat, lng]).addTo(map);
+    marker.bindPopup(generatePopup(dorm));
+  });
+}
+
+// Create popup content
+function generatePopup(dorm) {
+  let popup = `<b>${dorm['Piliin ang iyong Dormitory']}</b><br>`;
+  if (dorm['Contact Number']) popup += `<b>Contact:</b> ${dorm['Contact Number']}<br>`;
+  if (dorm['Available Bed Space - for GIRLS/BOYS']) popup += `Bed Space (Girls/Boys): ${dorm['Available Bed Space - for GIRLS/BOYS']}<br>`;
+  if (dorm['Available Bed Space - for GIRLS']) popup += `Bed Space (Girls): ${dorm['Available Bed Space - for GIRLS']}<br>`;
+  if (dorm['Available Bed Space - for BOYS']) popup += `Bed Space (Boys): ${dorm['Available Bed Space - for BOYS']}<br>`;
+  if (dorm['Available Solo Room - for GIRLS/BOYS']) popup += `Solo Room (Girls/Boys): ${dorm['Available Solo Room - for GIRLS/BOYS']}<br>`;
+  if (dorm['Available Solo Room - for GIRLS']) popup += `Solo Room (Girls): ${dorm['Available Solo Room - for GIRLS']}<br>`;
+  if (dorm['Available Solo Room - for BOYS']) popup += `Solo Room (Boys): ${dorm['Available Solo Room - for BOYS']}<br>`;
+  if (dorm['Available Shared Room - for GIRLS/BOYS']) popup += `Shared Room (Girls/Boys): ${dorm['Available Shared Room - for GIRLS/BOYS']}<br>`;
+  if (dorm['Available Shared Room - for GIRLS']) popup += `Shared Room (Girls): ${dorm['Available Shared Room - for GIRLS']}<br>`;
+  if (dorm['Available Shared Room - for BOYS']) popup += `Shared Room (Boys): ${dorm['Available Shared Room - for BOYS']}<br>`;
+  
+  return popup;
+}
+</script>
+
+</body>
+</html>
+

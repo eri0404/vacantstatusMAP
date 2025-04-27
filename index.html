@@ -80,15 +80,15 @@ function addMarkers(dorms) {
 function generatePopup(dorm) {
   let popup = `<b>${dorm['Piliin ang iyong Dormitory']}</b><br>`;
   if (dorm['Contact Number']) popup += `<b>Contact:</b> ${dorm['Contact Number']}<br>`;
-  if (dorm['Available Bed Space - for GIRLS/BOYS']) popup += `Bed Space (Girls/Boys): ${dorm['Available Bed Space - for GIRLS/BOYS']}<br>`;
-  if (dorm['Available Bed Space - for GIRLS']) popup += `Bed Space (Girls): ${dorm['Available Bed Space - for GIRLS']}<br>`;
-  if (dorm['Available Bed Space - for BOYS']) popup += `Bed Space (Boys): ${dorm['Available Bed Space - for BOYS']}<br>`;
-  if (dorm['Available Solo Room - for GIRLS/BOYS']) popup += `Solo Room (Girls/Boys): ${dorm['Available Solo Room - for GIRLS/BOYS']}<br>`;
-  if (dorm['Available Solo Room - for GIRLS']) popup += `Solo Room (Girls): ${dorm['Available Solo Room - for GIRLS']}<br>`;
-  if (dorm['Available Solo Room - for BOYS']) popup += `Solo Room (Boys): ${dorm['Available Solo Room - for BOYS']}<br>`;
-  if (dorm['Available Shared Room - for GIRLS/BOYS']) popup += `Shared Room (Girls/Boys): ${dorm['Available Shared Room - for GIRLS/BOYS']}<br>`;
-  if (dorm['Available Shared Room - for GIRLS']) popup += `Shared Room (Girls): ${dorm['Available Shared Room - for GIRLS']}<br>`;
-  if (dorm['Available Shared Room - for BOYS']) popup += `Shared Room (Boys): ${dorm['Available Shared Room - for BOYS']}<br>`;
+  if (dorm['Available Bed Space - for GIRLS/BOYS']) popup += `Available Bed Space (Girls/Boys): ${dorm['Available Bed Space - for GIRLS/BOYS']}<br>`;
+  if (dorm['Available Bed Space - for GIRLS']) popup += `Available Bed Space (Girls): ${dorm['Available Bed Space - for GIRLS']}<br>`;
+  if (dorm['Available Bed Space - for BOYS']) popup += `Available Bed Space (Boys): ${dorm['Available Bed Space - for BOYS']}<br>`;
+  if (dorm['Available Solo Room - for GIRLS/BOYS']) popup += `Available Solo Room (Girls/Boys): ${dorm['Available Solo Room - for GIRLS/BOYS']}<br>`;
+  if (dorm['Available Solo Room - for GIRLS']) popup += `Available Solo Room (Girls): ${dorm['Available Solo Room - for GIRLS']}<br>`;
+  if (dorm['Available Solo Room - for BOYS']) popup += ` AvailableSolo Room (Boys): ${dorm['Available Solo Room - for BOYS']}<br>`;
+  if (dorm['Available Shared Room - for GIRLS/BOYS']) popup += `Available Shared Room (Girls/Boys): ${dorm['Available Shared Room - for GIRLS/BOYS']}<br>`;
+  if (dorm['Available Shared Room - for GIRLS']) popup += `Available Shared Room (Girls): ${dorm['Available Shared Room - for GIRLS']}<br>`;
+  if (dorm['Available Shared Room - for BOYS']) popup += `Available Shared Room (Boys): ${dorm['Available Shared Room - for BOYS']}<br>`;
   
   return popup;
 }

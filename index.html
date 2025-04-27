@@ -1,17 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Dormitory Map with Satellite View</title>
+  <title>Dormitory Map with Satellite and OSM Layers</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   
+  <!-- Google Fonts (or you can use any other font) -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  
   <style>
     #map {
       height: 100vh;
       width: 100%;
+    }
+
+    /* Custom font for Dorm Names */
+    .dorm-name {
+      font-family: 'Roboto', sans-serif;
+      font-size: 18px;
+      font-weight: 500;
+      color: #2c3e50; /* Dark blue color */
     }
   </style>
 </head>
@@ -26,14 +37,25 @@
 // Initialize the map
 const map = L.map('map').setView([15.2206, 120.6873], 15); // San Agustin, Magalang, Pampanga
 
-// Mapbox access token (replace with your own token)
-const mapboxToken = 'YOUR_MAPBOX_ACCESS_TOKEN';
+// Add base layers: OpenStreetMap and Esri Satellite
+const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+});
 
-// Add Mapbox Satellite basemap
-const mapboxSatellite = L.tileLayer(`https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/{z}/{x}/{y}?access_token=${mapboxToken}`, {
-  attribution: '© Mapbox © OpenStreetMap contributors',
-  maxZoom: 19,
-}).addTo(map);
+const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+  attribution: 'Tiles &copy; Esri'
+});
+
+// Add layer control to switch between OSM and Satellite layers
+const baseLayers = {
+  "OpenStreetMap": osmLayer,
+  "Satellite": satelliteLayer
+};
+
+L.control.layers(baseLayers).addTo(map);
+
+// Default to OpenStreetMap
+osmLayer.addTo(map);
 
 // Your published CSV URL
 const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQRwwQ1M6kEM44Jgb1t5gjBEhlUPa8D_SdgOT9aN4RSfzJM7v_vvk2dQVRw0Qwe0-wZaqQDrTmupDQg/pub?output=csv';
@@ -80,17 +102,17 @@ function addMarkers(dorms) {
 
 // Create popup content
 function generatePopup(dorm) {
-  let popup = `<b>${dorm['Piliin ang iyong Dormitory']}</b><br>`;
+  let popup = `<b class="dorm-name">${dorm['Piliin ang iyong Dormitory']}</b><br>`;
   if (dorm['Contact Number']) popup += `<b>Contact:</b> ${dorm['Contact Number']}<br>`;
-  if (dorm['Available Bed Space - for GIRLS/BOYS']) popup += `Bed Space (Girls/Boys): ${dorm['Available Bed Space - for GIRLS/BOYS']}<br>`;
-  if (dorm['Available Bed Space - for GIRLS']) popup += `Bed Space (Girls): ${dorm['Available Bed Space - for GIRLS']}<br>`;
-  if (dorm['Available Bed Space - for BOYS']) popup += `Bed Space (Boys): ${dorm['Available Bed Space - for BOYS']}<br>`;
-  if (dorm['Available Solo Room - for GIRLS/BOYS']) popup += `Solo Room (Girls/Boys): ${dorm['Available Solo Room - for GIRLS/BOYS']}<br>`;
-  if (dorm['Available Solo Room - for GIRLS']) popup += `Solo Room (Girls): ${dorm['Available Solo Room - for GIRLS']}<br>`;
-  if (dorm['Available Solo Room - for BOYS']) popup += `Solo Room (Boys): ${dorm['Available Solo Room - for BOYS']}<br>`;
-  if (dorm['Available Shared Room - for GIRLS/BOYS']) popup += `Shared Room (Girls/Boys): ${dorm['Available Shared Room - for GIRLS/BOYS']}<br>`;
-  if (dorm['Available Shared Room - for GIRLS']) popup += `Shared Room (Girls): ${dorm['Available Shared Room - for GIRLS']}<br>`;
-  if (dorm['Available Shared Room - for BOYS']) popup += `Shared Room (Boys): ${dorm['Available Shared Room - for BOYS']}<br>`;
+  if (dorm['Available Bed Space - for GIRLS/BOYS']) popup += `Available Bed Space (Girls/Boys): ${dorm['Available Bed Space - for GIRLS/BOYS']}<br>`;
+  if (dorm['Available Bed Space - for GIRLS']) popup += `Available Bed Space (Girls): ${dorm['Available Bed Space - for GIRLS']}<br>`;
+  if (dorm['Available Bed Space - for BOYS']) popup += `Available Bed Space (Boys): ${dorm['Available Bed Space - for BOYS']}<br>`;
+  if (dorm['Available Solo Room - for GIRLS/BOYS']) popup += `Available Solo Room (Girls/Boys): ${dorm['Available Solo Room - for GIRLS/BOYS']}<br>`;
+  if (dorm['Available Solo Room - for GIRLS']) popup += `Available Solo Room (Girls): ${dorm['Available Solo Room - for GIRLS']}<br>`;
+  if (dorm['Available Solo Room - for BOYS']) popup += `Available Solo Room (Boys): ${dorm['Available Solo Room - for BOYS']}<br>`;
+  if (dorm['Available Shared Room - for GIRLS/BOYS']) popup += `Available Shared Room (Girls/Boys): ${dorm['Available Shared Room - for GIRLS/BOYS']}<br>`;
+  if (dorm['Available Shared Room - for GIRLS']) popup += `Available Shared Room (Girls): ${dorm['Available Shared Room - for GIRLS']}<br>`;
+  if (dorm['Available Shared Room - for BOYS']) popup += `Available Shared Room (Boys): ${dorm['Available Shared Room - for BOYS']}<br>`;
   
   return popup;
 }

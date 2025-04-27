@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Dormitory Map with Routes</title>
+  <title>Dormitory Map with Satellite View</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
@@ -34,9 +34,6 @@ const mapboxSatellite = L.tileLayer(`https://api.mapbox.com/styles/v1/mapbox/sat
   attribution: '© Mapbox © OpenStreetMap contributors',
   maxZoom: 19,
 }).addTo(map);
-
-// PSAU Gate 1 coordinates
-const psauGate1 = [15.2156, 120.6886]; // Replace with actual coordinates if needed
 
 // Your published CSV URL
 const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQRwwQ1M6kEM44Jgb1t5gjBEhlUPa8D_SdgOT9aN4RSfzJM7v_vvk2dQVRw0Qwe0-wZaqQDrTmupDQg/pub?output=csv';
@@ -78,11 +75,6 @@ function addMarkers(dorms) {
 
     const marker = L.marker([lat, lng]).addTo(map);
     marker.bindPopup(generatePopup(dorm));
-
-    // When marker is clicked, get directions to PSAU Gate 1
-    marker.on('click', function() {
-      getDirections([lat, lng], psauGate1);
-    });
   });
 }
 
@@ -101,31 +93,6 @@ function generatePopup(dorm) {
   if (dorm['Available Shared Room - for BOYS']) popup += `Shared Room (Boys): ${dorm['Available Shared Room - for BOYS']}<br>`;
   
   return popup;
-}
-
-// Get directions using Google Maps Directions API
-function getDirections(from, to) {
-  const directionsService = new google.maps.DirectionsService();
-  const directionsRenderer = new google.maps.DirectionsRenderer();
-  
-  const start = new google.maps.LatLng(from[0], from[1]);
-  const end = new google.maps.LatLng(to[0], to[1]);
-  
-  const request = {
-    origin: start,
-    destination: end,
-    travelMode: google.maps.TravelMode.DRIVING,
-  };
-  
-  directionsService.route(request, function(response, status) {
-    if (status === google.maps.DirectionsStatus.OK) {
-      // Draw the route on the map
-      directionsRenderer.setDirections(response);
-      directionsRenderer.setMap(map);
-    } else {
-      console.error('Directions request failed due to ' + status);
-    }
-  });
 }
 </script>
 

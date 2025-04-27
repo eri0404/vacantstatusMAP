@@ -26,17 +26,14 @@
 // Initialize the map
 const map = L.map('map').setView([15.2206, 120.6873], 15); // San Agustin, Magalang, Pampanga
 
-// Google Maps API key (replace with your own key)
-const googleMapsApiKey = 'YOUR_GOOGLE_MAPS_API_KEY';
+// Mapbox access token (replace with your own token)
+const mapboxToken = 'YOUR_MAPBOX_ACCESS_TOKEN';
 
-// Add Google Satellite basemap
-const googleSatellite = L.tileLayer(
-  `https://maps.googleapis.com/maps/api/staticmap?center={lat},{lng}&zoom={z}&size=600x600&maptype=satellite&key=${googleMapsApiKey}`,
-  {
-    attribution: '&copy; <a href="https://www.google.com/intl/en-US_US/help/terms_maps.html">Google</a>',
-    maxZoom: 19,
-  }
-).addTo(map);
+// Add Mapbox Satellite basemap
+const mapboxSatellite = L.tileLayer(`https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/{z}/{x}/{y}?access_token=${mapboxToken}`, {
+  attribution: '© Mapbox © OpenStreetMap contributors',
+  maxZoom: 19,
+}).addTo(map);
 
 // PSAU Gate 1 coordinates
 const psauGate1 = [15.2156, 120.6886]; // Replace with actual coordinates if needed
